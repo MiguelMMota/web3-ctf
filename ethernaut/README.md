@@ -55,6 +55,7 @@ The vulnerability lies in the fact that, while `contribute()` correctly checks i
 ---
 
 ### 2: Fallout Solution
+On the surface it may seem that the `Fallout` contract has a bit more going on than `Fallback` did in the previous exercise, but a quick look at the "constructor" will show that it's not a constructor at all! An attacker can just claim ownership of the contract by calling `Fal1out`.
 
 ---
 
