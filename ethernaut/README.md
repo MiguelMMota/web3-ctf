@@ -42,8 +42,8 @@ Welcome to the best Ethernaut CTF Solutions Repository, with Foundry!
 #### What is Ethernaut?
 [Ethernaut](https://ethernaut.openzeppelin.com/), brought to us by [OpenZeppelin](https://www.openzeppelin.com/), is a Capture The Flag (CTF) style challenge focused on smart contract hacking and auditing. It consists of 29 levels, each progressively more complex, offering an excellent platform to master these skills.
 
-#### Challenge 0 Solution
-
+#### 0. Hello Ethernaut solution
+This is a simple introductory exercise on interacting with the contract. We can follow the steps by accessing the contract's public attributes and functions. When prompted to authenticate, we can check the contract abi for information on the password. After successfully authenticating, we submit the level.
 ---
 
 ### 1: Fallback Solution
