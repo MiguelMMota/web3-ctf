@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
+ // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.0;
 
-import 'openzeppelin-contracts-06/math/SafeMath.sol';
+import {SafeMath} from "@openzeppelin-06/math/SafeMath.sol";
 
 // Objectives
 // 1. Claim Ownership on the contract
