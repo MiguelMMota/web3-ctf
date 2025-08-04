@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  foundry:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: foundry-dev
+    volumes:
+      # Mount source code for live development
+      - ./src:/app/src
+      - ./script:/app/script
+      # Mount foundry config files
+      - ./foundry.toml:/app/foundry.toml
+      # Persist forge cache and build artifacts
+      - foundry-cache:/app/cache
+      - foundry-out:/app/out
+      # Keystore
+      - ~/.foundry/keystores:/home/foundry/.foundry/keystores  # Mount keystore directory
+      - ./.password:/app/.password  # Mount password file
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    environment:
+      - FOUNDRY_PROFILE=default
+    command: bash
+    networks:
+      - foundry-network
+
+  # # Optional: Add a service for local blockchain (anvil)
+  # anvil:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: foundry-anvil
+  #   ports:
+  #     - "8545:8545"
+  #   command: ["anvil", "--host", "0.0.0.0", "--port", "8545"]
+  #   profiles:
+  #     - blockchain
+  #   networks:
+  #     - foundry-network
+
+volumes:
+  foundry-cache:
+  foundry-out:
+
+networks:
+  foundry-network:
+    driver: bridge
