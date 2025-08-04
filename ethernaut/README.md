@@ -1,30 +1,37 @@
 `foundry.toml`, `src/` (exercises) and part of the docs (`.gitignore` and this README) are taken from JohnnyTime's great repo [here](https://github.com/RealJohnnyTime/ethernaut-foundry-solutions-johnnytime). I added
 1. my own solutions
 2. explanation and my thought process for each exercise in this README
-3. `justfile` with helpful commands (see [just](https://github.com/casey/just))
+3. containerisation of test setup, for security
+4. using accounts instead of passing private keys through environment variables
+5. `justfile` with helpful commands (see [just](https://github.com/casey/just))
 
 
 NB: several libs in the repository are outdated. Whenever possible, I focused on the exercises at hand and only updated the project setup when necessary.
 
 # Ethernaut Foundry Solutions 2023 - by JohnnyTime
 
+## Pre-requisites
+1. [Docker](https://www.docker.com/)
+2. Wallet accounts (requires [foundry](https://getfoundry.sh/)). Check what accounts you have setup with `cast wallet list`. Import new wallets with `cast wallet import <name>`.
+3. `.env` with your values for the variables in `.env.example`
+4. `.password` file with account passwords.
+5. [just](https://github.com/casey/just) (optional, if you want to use the command shorthands in `justfile`). Make sure to adapt the rpc url and account arguments to the `solve` command to match your testnet/account settings.
+
+
+> The password file should include the password for the accounts you set with cast. DO NOT WRITE YOUR PRIVATE_KEY IN THIS FILE, and do not commit this file to git.
+
 ## Installation
-1. If you haven't already, install Foundry on your machine, using the following commands:
-```bash
-curl -L https://foundry.paradigm.xyz | bash
-foundryup
-```
-2. Clone the [Ethernaut Foundry Solutions Repository](https://github.com/RealJohnnyTime/ethernaut-foundry-solutions-johnnytime) (don’t forget to leave a star on Github 😉)
-3. Execute `forge build`
-4. Create copy `.env_example` to `.env`
-5. Fill in the params in your `.env` file
+
+1. Start Docker engine
+2. `docker-compose up``
+
 
 ## Repository Structure
 1. We will create the challenge smart contract in our Foundry project in the `src\` folder.
 2. For every challenge, we will create a script file with the solution in the `script\` folder.
 3. We will get a challenge instance from the [Ethernaut Website](https://ethernaut.openzeppelin.com/).
 4. We will paste the instance address in our foundry solution file.
-5. We will run our solution script in Foundry.
+5. We will run our solution script in Foundry with `just solve <testName>`. E.g.: `just solve Fallback`
 6. We will submit the challenge through the [Ethernaut Website](https://ethernaut.openzeppelin.com/).
 
 ## Solutions

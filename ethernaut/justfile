@@ -1,0 +1,8 @@
+
+set dotenv-load
+
+launch:
+    docker-compose up --build -d
+
+solve testName:
+    docker-compose up -d && docker exec -it foundry-dev forge script script/{{testName}}.s.sol --rpc-url {{env_var('SEPOLIA_RPC_URL')}} --account sepoliaKey --password-file .password --broadcast
