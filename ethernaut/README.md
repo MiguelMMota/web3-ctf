@@ -44,9 +44,13 @@ Welcome to the best Ethernaut CTF Solutions Repository, with Foundry!
 
 #### 0. Hello Ethernaut solution
 This is a simple introductory exercise on interacting with the contract. We can follow the steps by accessing the contract's public attributes and functions. When prompted to authenticate, we can check the contract abi for information on the password. After successfully authenticating, we submit the level.
+
 ---
 
 ### 1: Fallback Solution
+The `Fallback` is short and easy to analyse. It seems that users are intended to interact with the contract mainly by contributing either with `contribute()` or by transfering ether directly to the contract, with the highest contributor being selected as the contract owner, who can additionally withdraw all the funds from the contract.
+
+The vulnerability lies in the fact that, while `contribute()` correctly checks if the sender is the highest contributor before making them the new owner, a much weaker verification is made when the user transfers directly to the contract. In the latter case, the user only needs to be a pre-existing contributor who is transferring **any** non-zero amount. An attacker need only make a valid call to `contribute()` transferring at least 0.001 ether, and then a direct transfer of 1 wei to be made the new owner of the contracting, and eligible to withdraw all the funds.
 
 ---
 
