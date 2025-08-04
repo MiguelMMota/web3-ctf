@@ -1,4 +1,10 @@
-Everything except for the solutions and part of this README is taken from JohnnyTime's great repo [here](https://github.com/RealJohnnyTime/ethernaut-foundry-solutions-johnnytime). NB: several libs in the repository are outdated. Whenever possible, I focused on the exercises at hand and only updated the project setup when necessary.
+`foundry.toml`, `src/` (exercises) and part of the docs (`.gitignore` and this README) are taken from JohnnyTime's great repo [here](https://github.com/RealJohnnyTime/ethernaut-foundry-solutions-johnnytime). I added
+1. my own solutions
+2. explanation and my thought process for each exercise in this README
+3. `justfile` with helpful commands (see [just](https://github.com/casey/just))
+
+
+NB: several libs in the repository are outdated. Whenever possible, I focused on the exercises at hand and only updated the project setup when necessary.
 
 # Ethernaut Foundry Solutions 2023 - by JohnnyTime
 
