@@ -1,4 +1,4 @@
-Everything except for the solutions and part of this README is taken from JohnnyTime's great repo [here](https://github.com/RealJohnnyTime/ethernaut-foundry-solutions-johnnytime)!
+Everything except for the solutions and part of this README is taken from JohnnyTime's great repo [here](https://github.com/RealJohnnyTime/ethernaut-foundry-solutions-johnnytime). NB: several libs in the repository are outdated. Whenever possible, I focused on the exercises at hand and only updated the project setup when necessary.
 
 # Ethernaut Foundry Solutions 2023 - by JohnnyTime
 
