@@ -4,5 +4,18 @@ set dotenv-load
 launch:
     docker-compose up --build -d
 
+# This recipe conditionally runs the CoinFlip bash script or a standard forge script.
 solve testName:
-    docker-compose up -d && docker exec -it foundry-dev forge script script/{{testName}}.s.sol --rpc-url {{env_var('SEPOLIA_RPC_URL')}} --account sepoliaKey --password-file .password --broadcast
+    @docker-compose up -d
+
+    @if [ "{{testName}}" == "CoinFlip" ]; then \
+        echo "Running the automated CoinFlip script..."; \
+        ./run_coin_flip.sh {{env_var('SEPOLIA_RPC_URL')}} sepoliaKey; \
+    else \
+        echo "Running the standard forge script for {{testName}}..."; \
+        docker exec -it foundry-dev forge script script/{{testName}}Attacker.s.sol \
+            --rpc-url {{env_var('SEPOLIA_RPC_URL')}} \
+            --account sepoliaKey \
+            --password-file .password \
+            --broadcast -vvvv; \
+    fi
