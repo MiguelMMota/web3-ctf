@@ -6,7 +6,6 @@ import {Script} from "forge-std/Script.sol";
 
 import {Constants} from "./Constants.s.sol";
 
-
 interface IFallback {
     function contribute() external payable;
     function withdraw() external;

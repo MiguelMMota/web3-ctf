@@ -6,7 +6,6 @@ import {Script} from "forge-std/Script.sol";
 
 import {Constants} from "./Constants.s.sol";
 
-
 interface IFallout {
     function Fal1out() external;
 }

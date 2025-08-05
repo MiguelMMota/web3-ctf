@@ -1,3 +1,5 @@
+# A brief note
+
 `foundry.toml`, `src/` (exercises) and part of the docs (`.gitignore` and this README) are taken from JohnnyTime's great repo [here](https://github.com/RealJohnnyTime/ethernaut-foundry-solutions-johnnytime). I added
 1. my own solutions
 2. explanation and my thought process for each exercise in this README
@@ -104,10 +106,13 @@ This definitely feels like overkill for such a simple exercise. We could've simp
 ---
 
 ### 4: Telephone Solution
+A classic problem to illustrate the difference between `tx.origin` and `msg.sender` (and why `tx.origin` should be used carefully). We can claim ownership of the contract by calling the 
+`changeOwner` function indirectly.
 
 ---
 
 ### 5: Token Solution
+
 
 ---
 

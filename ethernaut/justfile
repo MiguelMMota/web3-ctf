@@ -17,5 +17,5 @@ solve testName:
             --rpc-url {{env_var('SEPOLIA_RPC_URL')}} \
             --account sepoliaKey \
             --password-file .password \
-            --broadcast -vvvv; \
+            --broadcast -vvvv --tc {{testName}}Attacker; \
     fi
