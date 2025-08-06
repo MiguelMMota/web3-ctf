@@ -130,3 +130,8 @@ Hmm, interesting. What are the ways we can transfer ether to another contract `c
 3. by creating and funding a new contract `c2` and making it self-destruct, specifying that left-over funds should be moved to `c1`. This is the only option that works even if `c1` doesn't implement any functions from options 1 and 2.
 
 While this attack may seem innocuous at first glance, some protocols (particularly in the Defi space) depend on tightly-managed token balances. For example, forcing a transfer of a large amount of ETH to a lending protocol that uses ETH as collateral may devalue borrowers' collateral to such an extent that their positions become elligible for liquidation.
+
+---
+
+### 8: Vault Solution
+The unbreakable vault has a private password! Surely unbreakable. But **every** storage variable in our contract is stored and **visible** on chain. Attribute/Function visibility only applies to how these objects can interact with the contract and external contracts, and influence gas optimisations by the EVM. Since we are running our exercises on Sepolia ETH testnet, we can see the contract creation transaction on sepolia.etherscan. In the [State](https://sepolia.etherscan.io/tx/0x6cdd812e7d2fd94d62590b82c5604735fd2bb97473f95d8a39d4d7e1917e2fef#statechange) tab, we can see the updates to storage variables at address `0xA483DF2c9fEA5C9B33974B77e3D73E944bEAf559` (our vault address). The value at storage index 1 was changed to "A very strong secret password :)". Let's use that to crack open the vault.
