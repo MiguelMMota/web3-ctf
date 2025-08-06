@@ -152,5 +152,23 @@ Conveniently, even though the contract uses `safeMath` for deposits, it doesn't 
 
 ---
 
-### 11. Elevator
+### 11. Elevator Solution
 The `Elevator` contract is vulnerable to the fact that they rely on an unverified contract for data. We simply need to write a contract that **acts** like `Building`, but in reality will cleverly say first that a certain floor isn't the top floor, and then say it is. This will trick the elevator into allowing us into a floor that isn't supposed to be the top floor and then somehow thinking it is.
+
+---
+
+### 12. Privacy Solution
+Since the data is in a fixed-size array, the values in the array occupy consecutive storage slots. The contract is a little sneaky because it declares some variables of smaller types as well.
+
+When checking the contract's initial state on Sepolia etherscan, we see that it has 6 storage slots. Since we also have 6 state variables, we'd be inclined to think that it's storage slot per variable, and in that case the value in the data array storage slot would be some address pointing to the actual first value.
+
+In reality, some of the state variables declared in the contract can be packed into a single storage slot, if they don't occupy the whole slot. So for the six slots we have:
+
+Slot1 -> bool locked
+Slot2 -> uint256 ID
+Slot3 -> [uint8 flattening, uint8 denomination, uint16 awkwardness]
+Slot4 -> data[0]
+Slot5 -> data[1]
+Slot6 -> data[2]
+
+We can just check the value in Slot6 for the password seed use it to unlock the victim contract.
