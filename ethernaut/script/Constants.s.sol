@@ -16,4 +16,5 @@ contract Constants {
     address public constant DELEGATION_ADDRESS = 0x769b97df44A87C1557bfFd2666155630b3258C6D;
     address public constant FORCE_ADDRESS = 0x6a592A1E5A5975d9Fe92D6394680E8815979BD45;
     address public constant VAULT_ADDRESS = 0xA483DF2c9fEA5C9B33974B77e3D73E944bEAf559;
+    address payable public constant KING_ADDRESS = payable(0x75ed20C3A78a707690778bFE7e634cb5Dfe1fBA1);
 }
