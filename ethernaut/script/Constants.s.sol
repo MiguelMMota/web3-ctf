@@ -18,4 +18,5 @@ contract Constants {
     address public constant VAULT_ADDRESS = 0xA483DF2c9fEA5C9B33974B77e3D73E944bEAf559;
     address payable public constant KING_ADDRESS = payable(0x12d139372dFaCd28Df205361Ef8c0d0fB7aC6374);
     address payable public constant REENTRANCY_ADDRESS = payable(0xE76B0D1520f11A7455cC62F0998db32Ff4bddd4D);
+    address public constant ELEVATOR_ADDRESS = 0x9E9d0781AF8Bde367d34AEF6aB35a1907b62de15;
 }

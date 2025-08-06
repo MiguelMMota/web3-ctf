@@ -151,3 +151,6 @@ This is another classic attack example. As long as make an initial `deposit()` w
 Conveniently, even though the contract uses `safeMath` for deposits, it doesn't do so withdrawals, and so our series of withdrawals won't fail when our `uint256` balance would go below 0.
 
 ---
+
+### 11. Elevator
+The `Elevator` contract is vulnerable to the fact that they rely on an unverified contract for data. We simply need to write a contract that **acts** like `Building`, but in reality will cleverly say first that a certain floor isn't the top floor, and then say it is. This will trick the elevator into allowing us into a floor that isn't supposed to be the top floor and then somehow thinking it is.
