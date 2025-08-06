@@ -112,12 +112,8 @@ A classic problem to illustrate the difference between `tx.origin` and `msg.send
 ---
 
 ### 5: Token Solution
+Another classic problem for overflow/underflow checks on unsigned ints. If we transfer more than our balance to a different address, the balance difference wraps back around to a positive number because unsigned ints can never be negative.
 
-
----
-
-### 6: Delegation Solution
+We transfer our balance + 1 to a second account address. When the contract updates our balance with `balances[msg.sender] -= _value; <=> x = x - (x + 1) <=> x = -1`, this is represented in uint256 as 2^256 - 1.
 
 ---
-
-### 7: Force Solution
