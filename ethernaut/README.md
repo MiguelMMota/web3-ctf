@@ -142,3 +142,12 @@ The unbreakable vault has a private password! Surely unbreakable. But **every** 
 I noticed the `King` contract was vulnerable to reentrancy, and honed in on that. My initial thought was that we'd need to make a two-pronged attack, by draining the contract's funds first, and then somehow claiming ownership of the contract. But draining the contract doesn't guarantee draining the level address, so there was no guarantee that the level couldn't make a higher transfer at the end.
 
 It turns out the solution is much simpler. Changing the king depends on transferring the prize to the previous king. If we're the king and we reject any such transfers, we make sure the crown can never be taken from us. We do need to make sure we claim kingship with our malicious contract, though, and not with our private account.
+
+---
+
+### 10. Re-entrancy Solution
+This is another classic attack example. As long as make an initial `deposit()` we're eligible for one withdrawal of some limited amount, and we can drain the contract. Note that on `withdraw()` the victim contract sends the amount to the original sender **before** uploading the sender's balance. If the sender attempts another withdrawal upon receiving the funds, they can withdraw once more before their balance is updated. But that 2nd withdrawal triggers another transfers, which triggers another withdrawal, and so forth. We can add a check on the attacker contract to stop withdrawing when the victim's balance is drained to stop the infinite recursion.
+
+Conveniently, even though the contract uses `safeMath` for deposits, it doesn't do so withdrawals, and so our series of withdrawals won't fail when our `uint256` balance would go below 0.
+
+---
