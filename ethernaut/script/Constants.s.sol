@@ -14,4 +14,5 @@ contract Constants {
     address public constant TELEPHONE_ADDRESS = 0xCf80Fc0d5Ef945cDb5CB4360Bf2D27D5a500cb20;
     address public constant TOKEN_ADDRESS = 0x5A8B30C8D5dEdA46A174138527531C81E20FdbEd;
     address public constant DELEGATION_ADDRESS = 0x769b97df44A87C1557bfFd2666155630b3258C6D;
+    address public constant FORCE_ADDRESS = 0x6a592A1E5A5975d9Fe92D6394680E8815979BD45;
 }

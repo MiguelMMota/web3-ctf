@@ -122,3 +122,11 @@ We transfer our balance + 1 to a second account address. When the contract updat
 Here we have a contract with a delegate whose address we can't know externally. However, we do know the signature of its `pwn()`. Since the main contract's fallback is to call the function on the delegate contract, we can just call `pwn()` on the main contract to trigger the function on the delegate and claim ownership.
 
 ---
+
+### 7: Force Solution
+Hmm, interesting. What are the ways we can transfer ether to another contract `c1`?
+1. public/external payable functions in `c1`
+2. fallback/receive functions in `c1`
+3. by creating and funding a new contract `c2` and making it self-destruct, specifying that left-over funds should be moved to `c1`. This is the only option that works even if `c1` doesn't implement any functions from options 1 and 2.
+
+While this attack may seem innocuous at first glance, some protocols (particularly in the Defi space) depend on tightly-managed token balances. For example, forcing a transfer of a large amount of ETH to a lending protocol that uses ETH as collateral may devalue borrowers' collateral to such an extent that their positions become elligible for liquidation.
