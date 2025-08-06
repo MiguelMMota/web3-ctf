@@ -117,3 +117,8 @@ Another classic problem for overflow/underflow checks on unsigned ints. If we tr
 We transfer our balance + 1 to a second account address. When the contract updates our balance with `balances[msg.sender] -= _value; <=> x = x - (x + 1) <=> x = -1`, this is represented in uint256 as 2^256 - 1.
 
 ---
+
+### 6: Delegation Solution
+Here we have a contract with a delegate whose address we can't know externally. However, we do know the signature of its `pwn()`. Since the main contract's fallback is to call the function on the delegate contract, we can just call `pwn()` on the main contract to trigger the function on the delegate and claim ownership.
+
+---
