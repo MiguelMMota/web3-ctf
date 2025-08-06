@@ -139,4 +139,4 @@ The unbreakable vault has a private password! Surely unbreakable. But **every** 
 ### 9. King Solution
 I noticed the `King` contract was vulnerable to reentrancy, and honed in on that. My initial thought was that we'd need to make a two-pronged attack, by draining the contract's funds first, and then somehow claiming ownership of the contract. But draining the contract doesn't guarantee draining the level address, so there was no guarantee that the level couldn't make a higher transfer at the end.
 
-It turns out the solution is much simpler. Changing the king depends on transferring the prize to the previous king. If we're the king and we reject any such transfers, we make sure the crown can never be taken from us.
+It turns out the solution is much simpler. Changing the king depends on transferring the prize to the previous king. If we're the king and we reject any such transfers, we make sure the crown can never be taken from us. We do need to make sure we claim kingship with our malicious contract, though, and not with our private account.

