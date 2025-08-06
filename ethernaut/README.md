@@ -136,6 +136,8 @@ While this attack may seem innocuous at first glance, some protocols (particular
 ### 8: Vault Solution
 The unbreakable vault has a private password! Surely unbreakable. But **every** storage variable in our contract is stored and **visible** on chain. Attribute/Function visibility only applies to how these objects can interact with the contract and external contracts, and influence gas optimisations by the EVM. Since we are running our exercises on Sepolia ETH testnet, we can see the contract creation transaction on sepolia.etherscan. In the [State](https://sepolia.etherscan.io/tx/0x6cdd812e7d2fd94d62590b82c5604735fd2bb97473f95d8a39d4d7e1917e2fef#statechange) tab, we can see the updates to storage variables at address `0xA483DF2c9fEA5C9B33974B77e3D73E944bEAf559` (our vault address). The value at storage index 1 was changed to "A very strong secret password :)". Let's use that to crack open the vault.
 
+---
+
 ### 9. King Solution
 I noticed the `King` contract was vulnerable to reentrancy, and honed in on that. My initial thought was that we'd need to make a two-pronged attack, by draining the contract's funds first, and then somehow claiming ownership of the contract. But draining the contract doesn't guarantee draining the level address, so there was no guarantee that the level couldn't make a higher transfer at the end.
 
