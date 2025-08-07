@@ -176,9 +176,9 @@ We can just check the value in Slot6 for the password seed use it to unlock the 
 ---
 
 ### 13. Gatekeeper One Solution
-This really doesn't seem very complicated. We just have to bypass the three verifications:
-1. gateOne -> by interacting with the victim via a malicious smart contract
-2. gateTwo -> I'd have wanted to profile the gas consumption up to this point to determine heuristically how much gas to send for the transaction, but this doesn't seem to be possible because gas consumption varies with compiler versions and optimization settings, and it depends on many factors. It seems most people who posted solutions to this used a brute force approach. I went with a mitigated brute force approach, by using binary search to reduce the number of attempts.
+We have to bypass the three verifications:
+1. gateOne -> by interacting with the victim via a malicious smart contract. We've done this before
+2. gateTwo -> this is the trickiest part. I wanted to avoid determining this by brute force on the sepolia eth testnet, and eventually settled for getting an estimate by forking my sepolia testnet on a local (containerised) anvil instance and running a brute force on that. Because gas costs may vary slightly between running on my local anvil test and on the sepolia testnet, I then ran the attack with a smaller set of gas values around the local test estimate.
 3. gateThree:
   i. part one -> use a `_gateKey` where the 3rd and 4th least-significant bytes are 0.
   ii. part two -> use a `_gateKey` where one of the 4 most-significant bytes is not 0.
