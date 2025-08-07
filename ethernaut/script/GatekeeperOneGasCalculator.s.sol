@@ -4,8 +4,6 @@ pragma solidity ^0.8.0;
 
 import {Script, console} from "forge-std/Script.sol";
 
-import {GatekeeperOne} from "../src/GatekeeperOne.sol";
-
 interface IGatekeeperOne {
     function enter(bytes8 _gateKey) external;
 }
