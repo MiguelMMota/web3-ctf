@@ -1,10 +1,11 @@
 version: '3.8'
 
 services:
+
   foundry:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.foundry
     container_name: foundry-dev
     volumes:
       # Mount source code for live development
@@ -26,20 +27,25 @@ services:
     command: bash
     networks:
       - foundry-network
+    depends_on:
+      anvil:
+        condition: service_healthy # Wait for anvil to be healthy
 
-  # # Optional: Add a service for local blockchain (anvil)
-  # anvil:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: foundry-anvil
-  #   ports:
-  #     - "8545:8545"
-  #   command: ["anvil", "--host", "0.0.0.0", "--port", "8545"]
-  #   profiles:
-  #     - blockchain
-  #   networks:
-  #     - foundry-network
+  anvil:
+    build:
+      context: .
+      dockerfile: Dockerfile.anvil
+    container_name: foundry-anvil
+    ports:
+      - "8545:8545"
+    command: ["--host", "0.0.0.0", "--port", "8545", "--fork-url", "${SEPOLIA_RPC_URL}"]
+    networks:
+      - foundry-network
+    healthcheck:
+      test: ["CMD", "cast", "block-number", "--rpc-url", "http://localhost:8545"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
 
 volumes:
   foundry-cache:

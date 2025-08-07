@@ -23,17 +23,16 @@ solve testName:
     fi
 
 getGK1GastOffset:
-    docker exec -d foundry-dev anvil --host 0.0.0.0 --fork-url {{env_var('SEPOLIA_RPC_URL')}} --fork-block-number latest
+    source .env
 
-    export LOCAL_RPC_URL=http://127.0.0.1:8545
+    # Start the services
+    docker-compose up -d
 
     sleep 5  # wait for anvil to start up
 
-    @docker-compose up -d
-
     echo "Running Gatekeeper One gas estimation with GatekeeperOneAttack contract"; \
     docker exec -it foundry-dev forge script script/GatekeeperOneGasCalculator.s.sol \
-        --rpc-url {{env_var('LOCAL_RPC_URL')}} \
+        --rpc-url http://anvil:8545 \
         --account sepoliaKey \
         --password-file .password \
         --broadcast -vvvv --tc GatekeeperOneGasCalculator; \
