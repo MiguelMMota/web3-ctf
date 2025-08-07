@@ -172,3 +172,16 @@ Slot5 -> data[1]
 Slot6 -> data[2]
 
 We can just check the value in Slot6 for the password seed use it to unlock the victim contract.
+
+---
+
+### 13. Gatekeeper One Solution
+This really doesn't seem very complicated. We just have to bypass the three verifications:
+1. gateOne -> by interacting with the victim via a malicious smart contract
+2. gateTwo -> I'd have wanted to profile the gas consumption up to this point to determine heuristically how much gas to send for the transaction, but this doesn't seem to be possible because gas consumption varies with compiler versions and optimization settings, and it depends on many factors. It seems most people who posted solutions to this used a brute force approach. I went with a mitigated brute force approach, by using binary search to reduce the number of attempts.
+3. gateThree:
+  i. part one -> use a `_gateKey` where the 3rd and 4th least-significant bytes are 0.
+  ii. part two -> use a `_gateKey` where one of the 4 most-significant bytes is not 0.
+  iii. part three -> the 2 least significant bytes of the `_gateKey` must be the original caller's (`tx.origin`) 2 least significant bytes
+
+---
