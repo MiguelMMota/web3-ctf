@@ -22,8 +22,6 @@ contract TelephoneAttack {
 
 contract TelephoneAttacker is Constants, Script {
 
-    TelephoneAttack telephoneAttack;
-
     function run() public {
         console.log("Deploying TelephoneAttack contract...");
         
