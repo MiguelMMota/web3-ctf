@@ -11,7 +11,6 @@ interface IGatekeeperOne {
 
 contract GatekeeperOneAttack {
     uint256 private constant GAS_TO_SEND = 49402;
-    uint256 private constant TARGET_GAS_LEFT = 8191;
 
     function attack() public {
         IGatekeeperOne victim = IGatekeeperOne(0xbc54EDE06C72a963b6ad27fb057EF4bE476ab97c);
