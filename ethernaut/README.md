@@ -185,3 +185,17 @@ We have to bypass the three verifications:
   iii. part three -> the 2 least significant bytes of the `_gateKey` must be the original caller's (`tx.origin`) 2 least significant bytes
 
 ---
+
+### 14. Gatekeeper Two Solution
+We have to bypass the three verifications:
+1. gateOne -> by interacting with the victim via a malicious smart contract, same as before
+2. gateTwo -> this is meant to prevent other smart contracts from interacting with the victim smart contract. Since smart contracts has its bytecode stored at their addresses, they typically fail this check. However, there are 4 types of addresses that pass this check:
+  i. EOA
+  ii. Contracts in construction (e.g.: when a contract call a function that requires this check from its constructor)
+  iii. An address where a contract will be created
+  iv. An address where a contract was, which was self-descructed
+
+  We'll use option ii.
+3. gateThree -> `_gateKey` must be the bitwise complement of the last 8 bytes of the attack contract.
+
+---
