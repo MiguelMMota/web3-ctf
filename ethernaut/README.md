@@ -199,3 +199,8 @@ We have to bypass the three verifications:
 3. gateThree -> `_gateKey` must be the bitwise complement of the last 8 bytes of the attack contract.
 
 ---
+
+### 15. Naught Coin
+We can transfer ERC20 tokens from an account using either `transfer` or `transferFrom`. The latter isn't guarded by the timelock constraint, so we can `approve` the transfer of funds from an accomplice account and use `transferFrom` to bypass the security measure.
+
+---

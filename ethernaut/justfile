@@ -13,6 +13,8 @@ solve testName:
         ./sh/run_coin_flip.sh {{env_var('SEPOLIA_RPC_URL')}} sepoliaKey; \
     elif [ "{{testName}}" == "Telephone" ]; then \
         ./sh/run_telephone.sh {{env_var('SEPOLIA_RPC_URL')}} sepoliaKey; \
+    elif [ "{{testName}}" == "NaughtCoin" ]; then \
+        ./sh/run_naught_coin.sh {{env_var('SEPOLIA_RPC_URL')}} sepoliaKey accompliceKey; \
     else \
         echo "Running the standard forge script for {{testName}}..."; \
         docker exec -it foundry-dev forge script script/{{testName}}Attacker.s.sol \
