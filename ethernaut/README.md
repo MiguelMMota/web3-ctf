@@ -238,7 +238,12 @@ Here's what we'll do:
 
 ---
 
-### 17. Recovery
+### 18. Recovery
 The lost contract address can be found on Etherscan. Look up the level instance address, and inspect the contract creation transaction. A third "to" address is listed with 0.001 ether. We can simply destroy the contract, removing its ether balance.
+
+---
+
+### 19. Magic Number
+We have to write a contract that will return 42 on any function call, directly in Assembly. [This article](https://medium.com/coinmonks/ethernaut-lvl-19-magicnumber-walkthrough-how-to-deploy-contracts-using-raw-assembly-opcodes-c50edb0f71a2) gives a brilliant explanation on how to write this script. We deploy it with the create2 opcode, and assign its address as the victim contract's solver.
 
 ---
