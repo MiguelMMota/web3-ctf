@@ -219,31 +219,48 @@ Here's what we'll do:
 
 ---
 
-### 15. Naught Coin
-We can transfer ERC20 tokens from an account using either `transfer` or `transferFrom`. The latter isn't guarded by the timelock constraint, so we can `approve` the transfer of funds from an accomplice account and use `transferFrom` to bypass the security measure.
-
----
-
-### 17. Preservation
-`delegatecalls` are very powerful because they allow contracts to execute logic that isn't in the contract itself *as if* the it had been. For simplicity, one can think of it as a contract C1 borrowing the logic from a target contract C2 which implements and running it directly, even though it's the exact opposite that is happening. In reality, C1 calls C2 and C2 operates as if it were C1, i.e.: with the original message parameters (sender, value, etc) and with the ability to affect tha C1's storage. This needs careful attention, as it opens C1 up to meaningful security vulnerabilities. We need to keep in mind:
-1. Using `delegatecall` on an unknown contract allows a target contract to run malicious code directly on the target contract
-2. The C1 and C2's storage must be defined identically, otherwise C2 will affect C1's storage variables incoherently.
-
-We'll take advantage of these two principles to exploit the `Preservation` contract. Note that it delegates some functionality to a `LibraryContract`, whose storage variables don't follow the order in which storage variables are declared in `Preservation`. When we delegate the call to `LibraryContract`, it will set a `uint256` value on the first storage slot of `Preservation`. However, this slot is for the `timeZone1Library`. So by calling `setFirstTime` or `setSecondTime`, we'll change the address values of the first time zone library, pointing to an address of our choosing.
-
-Here's what we'll do:
-1. Create a malicious contract that will set `Preservation.owner` to our account address
-2. Call `Preservation.setSecondTime` (could be `Preservation.setFirstTime`) with a value whose 20 least-significant bytes are the malicious contract address
-3. Call `Preservation.setFirstTime` (has to be this one, because `timeZone1Library` now points to our malicious contract) with any value.
-
----
-
-### 18. Recovery
+### 17. Recovery
 The lost contract address can be found on Etherscan. Look up the level instance address, and inspect the contract creation transaction. A third "to" address is listed with 0.001 ether. We can simply destroy the contract, removing its ether balance.
 
 ---
 
-### 19. Magic Number
+### 18. Magic Number
 We have to write a contract that will return 42 on any function call, directly in Assembly. [This article](https://medium.com/coinmonks/ethernaut-lvl-19-magicnumber-walkthrough-how-to-deploy-contracts-using-raw-assembly-opcodes-c50edb0f71a2) gives a brilliant explanation on how to write this script. We deploy it with the create2 opcode, and assign its address as the victim contract's solver.
+
+---
+
+### 19. Alien Codex
+I noticed a few things at first that didn't seem accidental:
+1. the solidity version of the contract set to ^0.5.0.
+2. the contract decrements the codex dynamic array length explicitly instead of removing the last item.
+3. the contract doesn't check the length of `codex` before updating an element at a given position.
+
+The exercise requires that we use these properties of the contract to manipulate the `owner` address by interacting with `codex`.
+
+We can see from the ABI that IsOwnable introduces an `owner` attribute and a few functions related to ownership. The superclass storage variables are declared and assigned storage slots first. With each slot having a capacity for 32 bytes of data, the AlienCodex storage slots would look like this:
+
+0 -> `owner` (address: 20 bytes, 12 bytes free)
+1 -> `contact` (bool: 1 byte, 31 bytes free)
+2 -> length of `codex` dynamic array (uint256 -> 32 bytes)
+...
+keccak256(2) -> first item of codex  // keccak256(2) because codex is at slot 2
+keccak256(2) + 1 -> second item of codex
+...
+
+After Solidity packs consecutive storage variables together for efficiency, we get:
+0 -> `owner` (address: 20 bytes, 12 bytes) + `contact` (bool: 1 byte). 11 bytes free
+1 -> length of `codex` dynamic array (uint256 -> 32 bytes)
+...
+keccak256(1) -> first item of codex  // keccak256(2) because codex is at slot 1
+keccak256(1) + 1 -> second item of codex
+...
+
+Some key points with the choice of Solidity 0.5.0:
+1. Prior to 0.6.0, it was possible to assign array length directly, as done in this smart contract.
+2. Prior to 0.8.0, arithmetic operations would overflow/undeflow without reverting.
+
+The attack vector is to manipulate the storage slot 0 (thus setting `owner`) by accessing a specific index in `codex`. codex[0] is at storage slot `keccak256(1)`. To update storage slot 0, we need to:
+1. Make `codex` cover the entire storage space by causing its length to underflow.
+2. Set codex[-keccak256(1)] to our player address. Since indexes are uint256, and codex[2**256] wraps around to codex[0], we can do codex[2**256-keccak256(i)].
 
 ---

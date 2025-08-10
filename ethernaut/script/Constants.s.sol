@@ -25,4 +25,5 @@ contract Constants {
     address public constant PRESERVATION_ADDRESS = 0x08e312B31b9Ef5eD8fDe77C6F6a3272A50271589;
     address public constant RECOVERY_ADDRESS = 0x399745B7f9A54C7cfD6F0657f1DEB3E8F65567D9;  // NB: this is the address of the deployed token, not the instance address
     address public constant MAGIC_NUMBER_ADDRESS = 0x64f20bdA5ea4F030B9DbcaFbe2Bb64ac5aF1C183;
+    address public constant ALIEN_CODEX_ADDRESS = 0x7cB8fC064684926924eaBB6f4203E20cB0BE3406;
 }
