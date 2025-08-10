@@ -264,3 +264,8 @@ The attack vector is to manipulate the storage slot 0 (thus setting `owner`) by 
 2. Set codex[-keccak256(1)] to our player address. Since indexes are uint256, and codex[2**256] wraps around to codex[0], we can do codex[2**256-keccak256(i)].
 
 ---
+
+### 20. Denial
+We can set the withdrawing partner to a malicious contract whose fallback function consumes all remaining gas.
+
+---
