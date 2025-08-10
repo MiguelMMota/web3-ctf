@@ -224,6 +224,20 @@ We can transfer ERC20 tokens from an account using either `transfer` or `transfe
 
 ---
 
+### 17. Preservation
+`delegatecalls` are very powerful because they allow contracts to execute logic that isn't in the contract itself *as if* the it had been. For simplicity, one can think of it as a contract C1 borrowing the logic from a target contract C2 which implements and running it directly, even though it's the exact opposite that is happening. In reality, C1 calls C2 and C2 operates as if it were C1, i.e.: with the original message parameters (sender, value, etc) and with the ability to affect tha C1's storage. This needs careful attention, as it opens C1 up to meaningful security vulnerabilities. We need to keep in mind:
+1. Using `delegatecall` on an unknown contract allows a target contract to run malicious code directly on the target contract
+2. The C1 and C2's storage must be defined identically, otherwise C2 will affect C1's storage variables incoherently.
+
+We'll take advantage of these two principles to exploit the `Preservation` contract. Note that it delegates some functionality to a `LibraryContract`, whose storage variables don't follow the order in which storage variables are declared in `Preservation`. When we delegate the call to `LibraryContract`, it will set a `uint256` value on the first storage slot of `Preservation`. However, this slot is for the `timeZone1Library`. So by calling `setFirstTime` or `setSecondTime`, we'll change the address values of the first time zone library, pointing to an address of our choosing.
+
+Here's what we'll do:
+1. Create a malicious contract that will set `Preservation.owner` to our account address
+2. Call `Preservation.setSecondTime` (could be `Preservation.setFirstTime`) with a value whose 20 least-significant bytes are the malicious contract address
+3. Call `Preservation.setFirstTime` (has to be this one, because `timeZone1Library` now points to our malicious contract) with any value.
+
+---
+
 ### 17. Recovery
 The lost contract address can be found on Etherscan. Look up the level instance address, and inspect the contract creation transaction. A third "to" address is listed with 0.001 ether. We can simply destroy the contract, removing its ether balance.
 
