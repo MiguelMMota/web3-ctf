@@ -22,4 +22,5 @@ contract Constants {
     address public constant PRIVACY_ADDRESS = 0x5ab468267a4d9068545DCB4aa8d9720F79c19d30;
     address public constant GATEKEEPER_TWO_ADDRESS = 0x318a5d6F8888f5188b61E071F07BdCb24e019a59;
     address public constant NAUGHT_COIN_ADDRESS = 0x1ed8Daad2b37EB930CF911bd25229867f1D527B9;
+    address public constant PRESERVATION_ADDRESS = 0x08e312B31b9Ef5eD8fDe77C6F6a3272A50271589;
 }
