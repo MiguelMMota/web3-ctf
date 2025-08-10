@@ -218,3 +218,13 @@ Here's what we'll do:
 3. Call `Preservation.setFirstTime` (has to be this one, because `timeZone1Library` now points to our malicious contract) with any value.
 
 ---
+
+### 15. Naught Coin
+We can transfer ERC20 tokens from an account using either `transfer` or `transferFrom`. The latter isn't guarded by the timelock constraint, so we can `approve` the transfer of funds from an accomplice account and use `transferFrom` to bypass the security measure.
+
+---
+
+### 17. Recovery
+The lost contract address can be found on Etherscan. Look up the level instance address, and inspect the contract creation transaction. A third "to" address is listed with 0.001 ether. We can simply destroy the contract, removing its ether balance.
+
+---
