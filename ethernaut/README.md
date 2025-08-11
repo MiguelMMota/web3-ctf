@@ -269,3 +269,18 @@ The attack vector is to manipulate the storage slot 0 (thus setting `owner`) by 
 We can set the withdrawing partner to a malicious contract whose fallback function consumes all remaining gas.
 
 ---
+
+### 21. Shop
+This is similar to the Elevator problem, but since `price()` is a view function, we can't change our contract's state during the function execution to return two different results. However, there is a change in the state of `Shop` between the two calls, and we can take advantage of it to return two different results depending on the state of `Shop` when `price()` is called.
+
+A more complicated solution could perhaps be achieved by burning gas in the view function. After calling `price()` for the first time, the victim contract still has to run:
+```
+isSold = true  // ~20000 gas
+buyer.price()  // overhead of ~2600 gas + whatever buyer.price() costs
+price = ...    // ~5000 gas
+// function completion overhead: ~200-500 gas.
+```
+
+All in all, the function should need ~28000 gas + the cost of our `price()` function. -22600 of these would be spent before calling `buyer.price()` for the second time. So we could write our `price()` function to return 100 and burn gas down to 28000 + `price()` gas cost + 3000 (margin) if the gasLeft is over that value. If it's over that value, return 0 and don't burn any gas. This would be less reliable, as gas estimates may differ depending on version, test chain, etc.
+
+---
