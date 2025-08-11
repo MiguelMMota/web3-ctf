@@ -284,3 +284,29 @@ price = ...    // ~5000 gas
 All in all, the function should need ~28000 gas + the cost of our `price()` function. -22600 of these would be spent before calling `buyer.price()` for the second time. So we could write our `price()` function to return 100 and burn gas down to 28000 + `price()` gas cost + 3000 (margin) if the gasLeft is over that value. If it's over that value, return 0 and don't burn any gas. This would be less reliable, as gas estimates may differ depending on version, test chain, etc.
 
 ---
+
+### 22. Dex
+Because we hold a significant percentage of the Dex's reserve funds, we can manipulate price by swapping all our funds of one token to the other, and vice-versa, multiple times. The contract stipulates the amount (`swapAmount`) we can of `T_a` we can exchange for `T_b` at any time with
+
+```
+our_amount_of_T_a * dex_ratio_of_tb_to_ta
+```
+
+Let's represent the state `Si` of the problem with `((dex_token1_balance, dex_token2_balance), (player_token1_balance, player_token2_balance))` and `swap` transactions `Ti` with (tokenToSwapFor, swapAmount), where tokenToSwapFor is T1 or T2 depending on whether player wants to get an amount of token1 or token2, respectively; and swapAmount is given by the formula above. We therefore may establish this sequence of states and swap transactions.
+
+NB: For simplicity, I'm truncating token amounts
+
+```
+S0 = ((100, 100), (10, 10)) | T0 = (T2, 10)  // We can trade our 10 T1 for 10 * 100/100 = 10 T2
+S1 = ((110, 90), (0, 20)) | T1 = (T1, 24)  // We can trade our 20 T2 for 20 * 110/90 ~= 24 T2
+S2 = ((86, 110), (24, 0)) | T2 = (T2, 30)
+S3 = ((110, 80), (0, 30)) | T3 = (T1, 41)
+S4 = ((69, 110), (41, 0)) | T4 = (T2, 65)
+S5 = ((110, 45), (0, 65)) | T5 = (T1, 158)
+```
+
+In `T5` we can swap an amount of 45 token2 to receive 45 * 110 / 45 = 110 token1. That will result in `S6 = ((0, 90), (110, 20))`, and the dex contract is out of token1.
+
+We can build a malicious contract that does these swaps back and forth, always swapping all of its funds of one token for the other, until the victim contract doesn't have enough to fulfil the swap. In the final swap, we swap for the victim's full balance of the target token.
+
+---
