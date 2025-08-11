@@ -292,7 +292,7 @@ Because we hold a significant percentage of the Dex's reserve funds, we can mani
 our_amount_of_T_a * dex_ratio_of_tb_to_ta
 ```
 
-Let's represent the state `Si` of the problem with `((dex_token1_balance, dex_token2_balance), (player_token1_balance, player_token2_balance))` and `swap` transactions `Ti` with (tokenToSwapFor, swapAmount), where tokenToSwapFor is T1 or T2 depending on whether player wants to get an amount of token1 or token2, respectively; and swapAmount is given by the formula above. We therefore may establish this sequence of states and swap transactions.
+Let's represent the state `Si` of the problem with `((dex_token1_balance, dex_token2_balance), (attacker_token1_balance, attacker_token2_balance))` and `swap` transactions `Ti` with `(tokenToSwapFor, swapAmount)`, where tokenToSwapFor is T1 or T2 depending on whether player wants to get an amount of token1 or token2, respectively; and swapAmount is given by the formula above. We therefore may establish this sequence of states and swap transactions.
 
 NB: For simplicity, I'm truncating token amounts
 
@@ -308,5 +308,27 @@ S5 = ((110, 45), (0, 65)) | T5 = (T1, 158)
 In `T5` we can swap an amount of 45 token2 to receive 45 * 110 / 45 = 110 token1. That will result in `S6 = ((0, 90), (110, 20))`, and the dex contract is out of token1.
 
 We can build a malicious contract that does these swaps back and forth, always swapping all of its funds of one token for the other, until the victim contract doesn't have enough to fulfil the swap. In the final swap, we swap for the victim's full balance of the target token.
+
+---
+
+### 22. Dex Two
+The `swap` function in this new dex contract removed the requirement that the swap pair should be token1 => token2 or token2 => token1. How can we take advantage of this to now drain all balances of token1 and token2?
+
+Recall that we could already drain the balance of one token. For the sake of example let's say it was token1. At the end of the `Dex` attack, `S6` was `S6 = ((0, 90), (110, 20))` (see exercise 21 explanation above). What would happen if we tried to remove the remaining balance 90 of token2 from the dex? Let's indicate a swap transaction of token2 for token2 with `Ti = (tokenToSwapFor', swapAmount)`. Note the "'" after tokenToSwapFor to indicate that it's the same as the token given in the swap. In this case, `swapAmount = our_amount_of_T_a * dex_ratio_of_tb_to_ta = our_amount_of_T_a`. 
+
+```
+S6 = ((0, 90), (110, 20)) | T6 = ()
+```
+
+So it's no use to swap a token for itself. But nothing stops us now from creating a third token whose sole purpose is to allow us to swap it for token1 and token2. Let's adapt the notation from the previous exercise:
+`Si` -> problem state represented by `((dex_token1_balance, dex_token2_balance, dex_token3_balance), (attacker_token1_balance, attacker_token2_balance, attacker_token3_balance))` and `swap` transactions `Ti` with `(tokenToSwapFor, swapAmount)`, where tokenToSwapFor is T1 or T2 depending on whether player wants to get an amount of token1 or token2, respectively; the token to give in the swap is always token3; and swapAmount is given by the same formula. We therefore may establish this sequence of steps:
+
+1. Create a new ERC20 token token3 with an initial supply of 400
+2. Transfer 100 token3 to the dex
+3. S0 = ((100, 100, 100), (10, 10, 300)) | T0 = (T1, 100)  // We can trade 100 T3 for 100 * 100/100 = 100 T1
+4. S1 = ((0, 100, 200), (110, 10, 200)) | T1 = (T2, 200)  // We can trade our remaining 200 T3 for 200 * 100/200 = 100 T2
+5. S2 = ((0, 100, 400), (110, 110, 0))
+
+The dex will be left with a worthless balance of 400 token3, and we'll have the full balance of token1 and token2.
 
 ---

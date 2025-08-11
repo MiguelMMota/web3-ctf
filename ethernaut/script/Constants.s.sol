@@ -29,4 +29,5 @@ contract Constants {
     address public constant DENIAL_ADDRESS = 0xF05EC693Ed7F9A5CfbB03eAEB979EB5f00CAaeaA;
     address public constant SHOP_ADDRESS = 0x23097cc793456b4fc5873c9e45C3cf541711DE0E;
     address public constant DEX_ADDRESS = 0x98B09d2cb44fC5cc5dba52521E41179ed5837873;
+    address public constant DEX_TWO_ADDRESS = 0x4F1eB414B6225314984514d78892858a40eb77f2;
 }
