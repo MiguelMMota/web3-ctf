@@ -2,7 +2,7 @@
 
 pragma solidity ^0.6.2;
 
-import {Script, console} from "forge-std/Script.sol";
+import {Script} from "forge-std/Script.sol";
 
 import {Constants} from "./Constants.s.sol";
 
@@ -13,7 +13,7 @@ interface IShop {
 }
 
 contract ShopMaliciousContract is Constants {
-    function price() external returns(uint256) {
+    function price() external view returns(uint256) {
         IShop victim = IShop(SHOP_ADDRESS);
         return victim.isSold() ? 0 : 100;
     }

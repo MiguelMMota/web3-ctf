@@ -38,7 +38,7 @@ contract GatekeeperOneAttack {
                     console.log(i);
                     return;
                 }
-            } catch (bytes memory lowLevelData) {
+            } catch (bytes memory /*lowLevelData*/) {
                 if (i % 500 == 0) {  // Log every 500 iterations
                     console.log("Low-level revert at offset");
                 }

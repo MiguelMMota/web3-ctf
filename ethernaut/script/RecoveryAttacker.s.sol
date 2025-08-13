@@ -2,7 +2,7 @@
 
 pragma solidity ^0.6.2;
 
-import {Script, console} from "forge-std/Script.sol";
+import {Script} from "forge-std/Script.sol";
 
 import {Constants} from "./Constants.s.sol";
 

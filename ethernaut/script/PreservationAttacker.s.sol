@@ -19,7 +19,7 @@ contract PreservationAttackMaliciousLibrary is Constants {
     address public timeZone2Library;
     address public owner;
 
-    function setTime(uint256 _time) public {
+    function setTime(uint256 /*_time*/) public {
         owner = ATTACKER_ADDRESS;
     }
 }

