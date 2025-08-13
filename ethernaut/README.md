@@ -241,7 +241,7 @@ We can see from the ABI that IsOwnable introduces an `owner` attribute and a few
 
 0 -> `owner` (address: 20 bytes, 12 bytes free)
 1 -> `contact` (bool: 1 byte, 31 bytes free)
-2 -> length of `codex` dynamic array (uint256 -> 32 bytes)
+2 -> address of `codex` first item (bytes32)
 ...
 keccak256(2) -> first item of codex  // keccak256(2) because codex is at slot 2
 keccak256(2) + 1 -> second item of codex
@@ -249,7 +249,7 @@ keccak256(2) + 1 -> second item of codex
 
 After Solidity packs consecutive storage variables together for efficiency, we get:
 0 -> `owner` (address: 20 bytes, 12 bytes) + `contact` (bool: 1 byte). 11 bytes free
-1 -> length of `codex` dynamic array (uint256 -> 32 bytes)
+1 -> address of `codex` first item (uint256 -> 32 bytes)
 ...
 keccak256(1) -> first item of codex  // keccak256(2) because codex is at slot 1
 keccak256(1) + 1 -> second item of codex
@@ -311,7 +311,7 @@ We can build a malicious contract that does these swaps back and forth, always s
 
 ---
 
-### 22. Dex Two
+### 23. Dex Two
 The `swap` function in this new dex contract removed the requirement that the swap pair should be token1 => token2 or token2 => token1. How can we take advantage of this to now drain all balances of token1 and token2?
 
 Recall that we could already drain the balance of one token. For the sake of example let's say it was token1. At the end of the `Dex` attack, `S6` was `S6 = ((0, 90), (110, 20))` (see exercise 21 explanation above). What would happen if we tried to remove the remaining balance 90 of token2 from the dex? Let's indicate a swap transaction of token2 for token2 with `Ti = (tokenToSwapFor', swapAmount)`. Note the "'" after tokenToSwapFor to indicate that it's the same as the token given in the swap. In this case, `swapAmount = our_amount_of_T_a * dex_ratio_of_tb_to_ta = our_amount_of_T_a`. 
@@ -330,5 +330,50 @@ So it's no use to swap a token for itself. But nothing stops us now from creatin
 5. S2 = ((0, 100, 400), (110, 110, 0))
 
 The dex will be left with a worthless balance of 400 token3, and we'll have the full balance of token1 and token2.
+
+---
+
+### 24. Puzzle Wallet
+What a great exercise!
+
+For this one, we have to be on the lookout for multiple small vulnerabilities that seem innocuous in isolation, but allow us to take full control of the contract and drain its funds. Let's start by recapping what we learned from previous exercises about how `delegatecall` interacts with storage.
+1. storage is divided into 2**256 32-byte slots
+2. storage variables in contracts are simply labels to data in these slots. Therefore, when `PuzzleWallet` updates `owner`, it updates its first slot.
+3. When a contract C1 does `delegatecall` on a contract C2, C2 executes its logic against C1's state, **and updating C1's state instead of its own**. 
+
+We can assume that the `_implementation` address given to `PuzzleProxy` is an address for a `PuzzleWallet` contract. `PuzzleProxy` will delegate all the calls it can't handle directly to its implementation. So the storage variables in `PuzzleWallet` must align with the `PuzzleProxy` storage variables.
+
+Let's analyse the storage variables of both contracts:
+
+| Slot # | PuzzleProxy | PuzzleWallet |
+|----------|----------|----------|
+| 0 | pendingAdmin (20 bytes) | owner (20 bytes) |
+| 1 | admin (20 bytes) | maxBalance (32 bytes) |
+| 2 | - | empty - whitelisted mapping placeholder |
+| 3 | - | empty - balances mapping placeholder |
+
+`PuzzleWallet` will also have the mapping values scattered throughout storage space at addresses given by keccak256(key || mapping_slot_number), where mapping_slot_number is 2 for `whitelisted` and 3 for `balances`.
+
+> **Vulnerability #1:** `PuzzleProxy.pendingAdmin` and `PuzzleWallet.owner` use the same storage slot. So our malicious contract can gain ownership privileges on `PuzzleWallet` by setting the pending admin, which doesn't require a privileged user level
+> **Vulnerability #2:** `PuzzleProxy.admin` and `PuzzleWallet.maxBalance` use the same storage slot (even though the former only needs 20 bytes of it). So we can become the admin of `PuzzleProxy` by setting the max balance on `PuzzleWallet`.
+
+We can trivially exploit Vulnerability #1. Vulnerability #2 requires some more work:
+1. We need to whitelist our malicious contract address, which is trivial since it's now the owner
+2. We need to drain the victim's funds. But how?
+
+Let's brainstorm ideas for draining the victim's funds:
+1. Some kind of reentrancy attack.
+  a. `execute()` does a `call` on the transfer recipient, but only after updating the contract's state ❌
+  b. `multicall(...)` does a `delegatecall`, but only on itself
+2. Calling `execute()` once, and in our `receive()` doing another `delegatecall` to `execute()` to withdraw the whole victim balance. When the victim calls our contract in its `execute()` function, they become the `msg.sender`. So if we `delegatecall` (not `call`) back to their `execute()`, the aim is that we'll pass the requirements to transfer the whole value out of the victim's contract. However, recall that `delegatecall` executes everything against the original contract's storage and any ether sent to any other contract is sent from the original contract. ❌
+3. If somehow we can do multiple deposits with a single transfer to the victim. Clearly the authors thought of this vulnerability, as they included a safeguard so that a `multicall()` doesn't have more than one `deposit()` action in its inputs. But what if a `multicall` was asked to do `multicall()` N times, and each of the nested multicalls did a single `deposit()`? That would work, since each `multicall()` would have its own tracker for multiple `deposit()` actions! This could be prevented by keeping track of `depositCalled` as a storage variable, which persists across different function scopes, and resetting it at the end of the multicall. ✅
+
+Here's the summary of our exploit:
+1. Create a malicious contract and give it a small amount of ether
+2. Make the malicious contract the `PuzzleWallet` owner by setting `PuzzleProxy.pendingAdmin` to its address
+3. Whitelist the malicious contract, so it can call the various privileged functions in `PuzzleWallet`
+4. Run a `multicall` with (N + 1) single-deposit multicalls, where N is (victim_balance / malicious_contract_balance) rounded up. The extra '1' is so that we can get our deposit back in addition to the victim's initial balance. This will make the victim allocate us a balance of (N+1) * deposit_amount, even though we only transferred a single deposit_amount
+5. Withdraw all our balance from the victim with `execute()`.
+6. Now that the victim's balance is 0, we can set `maxBalance` to a `uint256` that makes `admin` read our player address on storage slot 2.
 
 ---
